@@ -2,6 +2,17 @@
 // ===== SITE SETTINGS =====
 define('SITE_NAME', 'Database System');
 
+$app_host = "localhost";
+$app_user = "app_user";
+$app_pass = "admin123";
+$app_name = "database_users";  
+
+$conn_app = new mysqli($app_host, $app_user, $app_pass, $app_name);
+
+if ($conn_app->connect_error) {
+    die("App Database Connection Failed: " . $conn_app->connect_error);
+}
+
 // ===== DATABASE 1 =====
 $db1_host = "localhost";
 $db1_user = "keenanl_database1";      
