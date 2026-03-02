@@ -8,16 +8,50 @@ include "includes/header.php";
 $error = '';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $username = $_POST['username'] ?? '';
+    // take user input
+    $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    // Example account: admin/admin123
-    if ($username === 'admin' && $password === 'admin123') {
-        $_SESSION['user'] = $username;
-        header('Location: index.php');
-        exit();
+    if (!empty($username) && !empty($password)) {
+        $stmt = $conn_app->prepare("SELECT id, password, role FROM users WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($row = $result->fetch_assoc()) {
+            $db_pass = $row['password'];
+            $user_id = $row['id'];
+            $isValid = false;
+
+            // verify the secure hash
+            if (password_verify($password, $db_pass)) {
+                $isValid = true;
+            } 
+            // If it's plain text, log them in and hash (for default admin123 password)
+            elseif ($password === $db_pass) {
+                $isValid = true;
+                
+                $new_hash = password_hash($password, PASSWORD_DEFAULT);
+                $upgrade = $conn_app->prepare("UPDATE users SET password = ? WHERE id = ?");
+                $upgrade->bind_param("si", $new_hash, $user_id);
+                $upgrade->execute();
+                $upgrade->close();
+            }
+
+            if ($isValid) {
+                $_SESSION['user'] = $username;
+                $_SESSION['role'] = $row['role'];
+                header('Location: index.php');
+                exit();
+            } else {
+                $error = "Invalid username or password!";
+            }
+        } else {
+            $error = "Invalid username or password!";
+        }
+        $stmt->close();
     } else {
-        $error = "Invalid username or password!";
+        $error = "Please fill in all fields.";
     }
 }
 ?>
