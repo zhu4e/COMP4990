@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["run_etl"])) {
 
   // 1) Connect WITHOUT selecting a DB (so we can create/select it)
   logLine($log, "Connecting to MySQL...");
-  $dw = new mysqli($db1_host, $db1_user, $db1_pass);
+  $dw = new mysqli($dw_host, $dw_user, $dw_pass);
   if ($dw->connect_error) {
     logLine($log, "❌ Warehouse server connection failed: " . $dw->connect_error);
   } else {
