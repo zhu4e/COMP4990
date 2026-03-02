@@ -74,6 +74,19 @@ include "includes/header.php";
     </div>
   </div>
 
+  <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+  <div class="data-access-section" style="margin-top: 40px;">
+    <h2>Administration</h2>
+    <div class="data-grid">
+      <div class="data-card" style="border: 2px solid rgba(124,58,237,.20);">
+        <h3>User Management</h3>
+        <p class="muted" style="margin-bottom: 15px;">Add, view, and remove access for dashboard users.</p>
+        <a class="btn" style="background: linear-gradient(180deg, #7c3aed, #6d28d9);" href="admin_users.php">Manage Users</a>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+
   <a class="logout-link" href="logout.php">Logout</a>
 
 </div>
