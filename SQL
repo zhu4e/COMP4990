@@ -1,1 +1,70 @@
+-- Dimension Tables
 
+CREATE TABLE BranchDim (
+    BranchKey INT NOT NULL AUTO_INCREMENT,
+    City VARCHAR(100),
+    Province VARCHAR(100),
+    Country VARCHAR(100),
+    PRIMARY KEY (BranchKey)
+);
+
+CREATE TABLE CustomerDim (
+    CustomerKey INT NOT NULL AUTO_INCREMENT,
+    SourceCustomerID INT,
+    CustomerName VARCHAR(255),
+    Phone VARCHAR(20),
+    Email VARCHAR(255),
+    Country VARCHAR(100),
+    PRIMARY KEY (CustomerKey)
+);
+
+CREATE TABLE ProductDim (
+    ProductKey INT NOT NULL AUTO_INCREMENT,
+    SourceProductID INT,
+    ProductName VARCHAR(255),
+    Category VARCHAR(100),
+    CurrentPrice DECIMAL(10, 2),
+    PRIMARY KEY (ProductKey)
+);
+
+CREATE TABLE DatetimeDim (
+    DateKey INT NOT NULL,
+    FullDate DATE,
+    SaleTime TIME,
+    Month VARCHAR(20),
+    Quarter INT,
+    Year INT,
+    PRIMARY KEY (DateKey)
+);
+
+-- Fact Tables
+
+CREATE TABLE FactSales (
+    SalesKey INT NOT NULL AUTO_INCREMENT,
+    ProductKey INT NOT NULL,
+    CustomerKey INT NOT NULL,
+    DateKey INT NOT NULL,
+    BranchKey INT NOT NULL,
+    SourceOrderID INT, 
+    Quantity INT,
+    UnitPrice DECIMAL(10, 2),
+    Revenue DECIMAL(12, 2),
+    PRIMARY KEY (SalesKey),
+    FOREIGN KEY (ProductKey) REFERENCES ProductDim(ProductKey),
+    FOREIGN KEY (CustomerKey) REFERENCES CustomerDim(CustomerKey),
+    FOREIGN KEY (DateKey) REFERENCES DatetimeDim(DateKey),
+    FOREIGN KEY (BranchKey) REFERENCES BranchDim(BranchKey)
+);
+
+CREATE TABLE FactInventory (
+    InventoryKey INT NOT NULL AUTO_INCREMENT,
+    ProductKey INT NOT NULL,
+    DateKey INT NOT NULL,
+    BranchKey INT NOT NULL,
+    CurrentStock INT,
+    RestockThreshold INT,
+    PRIMARY KEY (InventoryKey),
+    FOREIGN KEY (ProductKey) REFERENCES ProductDim(ProductKey),
+    FOREIGN KEY (DateKey) REFERENCES DatetimeDim(DateKey),
+    FOREIGN KEY (BranchKey) REFERENCES BranchDim(BranchKey)
+);
