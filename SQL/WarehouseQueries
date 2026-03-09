@@ -1,1 +1,72 @@
+-- 1. Average Order Value by Branch 
+-- Calculates and displays the average amount spent per transaction at each branch  
+SELECT   
+    f.BranchKey, 
+    b.City,  
+    SUM(f.Revenue) / COUNT(DISTINCT f.SourceOrderID) AS AvgOrderValue  
+FROM FactSales f  
+JOIN BranchDim b ON f.BranchKey = b.BranchKey  
+GROUP BY f.BranchKey, b.City; 
 
+-- 2. The Products That Need Restocking by Branch 
+-- This query identifies every product at every branch that has fallen below its stock threshold. It shows the Branch ID, the city, stock amount, and the threshold. 
+SELECT  
+   b.BranchKey, 
+   b.City, 
+   p.ProductKey, 
+   p.ProductName, 
+   i.CurrentStock, 
+   i.RestockThreshold 
+FROM FactInventory i 
+JOIN BranchDim b ON i.BranchKey = b.BranchKey 
+JOIN ProductDim p ON i.ProductKey = p.ProductKey 
+WHERE i.CurrentStock < i.RestockThreshold 
+ORDER BY b.BranchKey, i.CurrentStock ASC; 
+
+
+-- 3. Top 5 Customers by Lifetime Value  
+-- This identifies our best customers by summing up all their purchases using the SourceCustomerID to find the 5 customers that have spent the most. 
+SELECT  
+    c.SourceCustomerID, 
+    c.CustomerName, 
+    SUM(f.Revenue) AS TotalLifetimeSpend 
+FROM FactSales f 
+JOIN CustomerDim c ON f.CustomerKey = c.CustomerKey 
+GROUP BY c.SourceCustomerID, c.CustomerName 
+ORDER BY TotalLifetimeSpend DESC 
+LIMIT 5; 
+
+-- 4. Quarterly Analysis 
+-- This groups sales by Year and Quarter to find revenue and number of orders per quarter and year 
+SELECT  
+    d.Year, 
+    d.Quarter, 
+    SUM(f.Revenue) AS QuarterlyRevenue, 
+    COUNT(DISTINCT f.SourceOrderID) AS NumberOfOrders 
+FROM FactSales f 
+JOIN DatetimeDim d ON f.DateKey = d.DateKey 
+GROUP BY d.Year, d.Quarter 
+ORDER BY d.Year, d.Quarter; 
+ 
+-- 5. Products with Zero Sales  
+-- Lists products that have never been sold  
+SELECT DISTINCT p.ProductName 
+FROM ProductDim p 
+JOIN FactInventory i ON p.ProductKey = i.ProductKey 
+WHERE p.ProductKey NOT IN (SELECT ProductKey FROM FactSales); 
+
+-- 6. Most Profitable Product Categories per Month 
+-- rank categories by revenue for every month, showing which category made the most for each month 
+SELECT * FROM ( 
+    SELECT  
+        d.Month, 
+        d.Year, 
+        p.Category, 
+        SUM(f.Revenue) AS Revenue, 
+        RANK() OVER (PARTITION BY d.Year, d.Month ORDER BY SUM(f.Revenue) DESC) as SalesRank 
+    FROM FactSales f 
+    JOIN ProductDim p ON f.ProductKey = p.ProductKey 
+    JOIN DatetimeDim d ON f.DateKey = d.DateKey 
+    GROUP BY d.Year, d.Month, p.Category 
+) RankedSales 
+WHERE SalesRank = 1; 
