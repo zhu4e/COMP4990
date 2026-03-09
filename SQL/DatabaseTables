@@ -1,1 +1,57 @@
+CREATE TABLE Customers (
+    CustomerID INT NOT NULL AUTO_INCREMENT,
+    CustomerName VARCHAR(255) NOT NULL,
+    Country VARCHAR(100),
+    Phone VARCHAR(20),
+    Email VARCHAR(255),
+    PRIMARY KEY (CustomerID)
+);
 
+CREATE TABLE Products (
+    ProductID INT NOT NULL AUTO_INCREMENT,
+    ProductName VARCHAR(255) NOT NULL,
+    Category VARCHAR(100),
+    CurrentPrice DECIMAL(10, 2) NOT NULL,
+    PRIMARY KEY (ProductID)
+);
+
+CREATE TABLE Orders (
+    OrderID INT NOT NULL AUTO_INCREMENT,
+    CustomerID INT NOT NULL,
+    OrderDateTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (OrderID),
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+CREATE TABLE Order_Items (
+    OrderID INT NOT NULL,
+    ProductID INT NOT NULL,
+    Quantity INT NOT NULL,
+    UnitPrice DECIMAL(10, 2) NOT NULL,
+    PRIMARY KEY (OrderID, ProductID),
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+CREATE TABLE Stock (
+    StockID INT NOT NULL AUTO_INCREMENT,
+    ProductID INT NOT NULL,
+    RestockThreshold INT DEFAULT 10,
+    CurrentStock INT NOT NULL,
+    LastRestocked DATETIME,
+    PRIMARY KEY (StockID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+-- OrderID Nullable
+CREATE TABLE StockLog (
+    LogID INT NOT NULL AUTO_INCREMENT,
+    OrderID INT NULL, 
+    ProductID INT NOT NULL,
+    LogDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    QuantityChange INT NOT NULL,
+    StockBefore INT NOT NULL,
+    PRIMARY KEY (LogID),
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
