@@ -1,4 +1,3 @@
-
 -- Dimension Tables
 
 CREATE TABLE BranchDim (
