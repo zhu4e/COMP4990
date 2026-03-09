@@ -1,1 +1,33 @@
 
+INSERT INTO Customers (CustomerName, Country, Phone, Email) VALUES 
+('Alice Smith', 'Canada', '519-555-0101', 'alices@email.com'),
+('Bob Jones', 'USA', '313-555-0202', 'bjones@provider.net'),
+('Charlie Brown', 'Canada', '416-555-0303', 'charlieb@email.com'),
+('Diana Prince', 'USA', '202-555-0404', 'diana@themyscira.com');
+
+INSERT INTO Products (ProductName, Category, CurrentPrice) VALUES 
+('Gaming Laptop', 'Electronics', 1200.00),
+('Wireless Mouse', 'Accessories', 50.00),
+('Mechanical Keyboard', 'Accessories', 150.00),
+('Office Chair', 'Furniture', 300.00),
+('USB-C Cable', 'Accessories', 25.00);
+
+INSERT INTO Stock (ProductID, RestockThreshold, CurrentStock, LastRestocked) VALUES 
+(1, 5, 20, '2026-01-01 09:00:00'), 
+(2, 10, 50, '2026-01-05 10:00:00'), 
+(3, 5, 15, '2026-01-05 10:00:00'), 
+(4, 3, 2, '2026-01-10 11:00:00'),  
+(5, 20, 100, '2026-01-15 08:30:00'); 
+
+INSERT INTO Orders (CustomerID, OrderDateTime) VALUES 
+(1, '2026-02-15 14:30:00'), 
+(2, '2026-02-16 09:15:00'), 
+(3, '2026-02-16 11:45:00'), 
+(1, '2026-03-01 16:00:00'); 
+
+INSERT INTO Order_Items (OrderID, ProductID, Quantity, UnitPrice) VALUES 
+(1, 1, 1, 1200.00), 
+(1, 2, 1, 50.00),   
+(2, 3, 2, 150.00),  
+(3, 4, 1, 300.00),  
+(4, 5, 4, 25.00);   
