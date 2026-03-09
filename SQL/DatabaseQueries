@@ -1,1 +1,93 @@
+-- 1. Inventory Accuracy Check 
+-- This query calculates what the stock should be based on the StockLog and compares it to the CurrentStock in the Stock table to find differences. 
+SELECT  
+   p.ProductName, 
+   s.CurrentStock AS ActualStock, 
+   (s.CurrentStock - SUM(sl.QuantityChange)) AS ExpectedStock 
+FROM Products p 
+JOIN Stock s ON p.ProductID = s.ProductID 
+JOIN StockLog sl ON p.ProductID = sl.ProductID 
+GROUP BY p.ProductID, p.ProductName, s.CurrentStock; 
 
+-- 2. Product Popularity by Country 
+-- This shows which product is the #1 bestseller in each country.   
+
+SELECT Country, ProductName, TotalQty 
+FROM ( 
+   SELECT  
+       c.Country,  
+       p.ProductName,  
+       SUM(oi.Quantity) AS TotalQty, 
+       RANK() OVER (PARTITION BY c.Country ORDER BY SUM(oi.Quantity) DESC) as Rnk 
+   FROM Order_Items oi 
+   JOIN Products p ON oi.ProductID = p.ProductID 
+   JOIN Orders o ON oi.OrderID = o.OrderID 
+   JOIN Customers c ON o.CustomerID = c.CustomerID 
+   GROUP BY c.Country, p.ProductName 
+) AS RankedProducts 
+WHERE Rnk = 1; 
+
+-- 3. Slow Moving Inventory 
+-- Finds products that have a high Current Stock but have not appeared in any Orders for the last 6 months. 
+SELECT p.ProductName, s.CurrentStock 
+FROM Products p 
+JOIN Stock s ON p.ProductID = s.ProductID 
+WHERE s.CurrentStock > 50 
+AND p.ProductID NOT IN ( 
+   SELECT oi.ProductID  
+   FROM Order_Items oi 
+   JOIN Orders o ON oi.OrderID = o.OrderID 
+   WHERE o.OrderDateTime > DATE_SUB(NOW(), INTERVAL 6 MONTH) 
+); 
+
+-- 4. Monthly Sales Growth Comparison 
+-- Calculates the total revenue for the current month and compares it to the previous month. 
+SELECT  
+    (SELECT SUM(Quantity * UnitPrice)  
+     FROM Order_Items oi  
+     JOIN Orders o ON oi.OrderID = o.OrderID  
+     WHERE o.OrderDateTime >= CURDATE() - INTERVAL 1 MONTH) AS CurrentMonthRev, 
+    (SELECT SUM(Quantity * UnitPrice)  
+     FROM Order_Items oi  
+     JOIN Orders o ON oi.OrderID = o.OrderID  
+     WHERE o.OrderDateTime >= CURDATE() - INTERVAL 2 MONTH  
+       AND o.OrderDateTime < CURDATE() - INTERVAL 1 MONTH) AS LastMonthRev; 
+
+-- 5. Discount Impact Analysis  
+-- This query identifies items sold below the current price from discounts and compares the average quantity per order for discounted sales versus full-price sales to see if lowering the price increased quantity per order. 
+WITH SaleComparison AS ( 
+   SELECT  
+       oi.ProductID, 
+       p.ProductName, 
+       oi.Quantity, 
+       CASE  
+           WHEN oi.UnitPrice < p.CurrentPrice THEN 'Discounted' 
+           ELSE 'Full Price' 
+       END AS PriceStatus 
+   FROM Order_Items oi 
+   JOIN Products p ON oi.ProductID = p.ProductID 
+) 
+SELECT  
+   ProductName, 
+   PriceStatus, 
+   COUNT(*) AS TotalTransactions, 
+   SUM(Quantity) AS TotalUnitsSold, 
+   AVG(Quantity) AS AvgUnitsPerOrder 
+FROM SaleComparison 
+GROUP BY ProductName, PriceStatus 
+ORDER BY ProductName, PriceStatus; 
+
+-- 6. Post-Restock Sales Query 
+-- This query looks at products that were restocked in the last 30 days and calculates how many units have been sold since the restock date. 
+SELECT  
+   p.ProductName, 
+   s.LastRestocked, 
+   s.CurrentStock, 
+   SUM(oi.Quantity) AS UnitsSoldSinceRestock, 
+   (SUM(oi.Quantity) / s.CurrentStock) * 100 AS InventoryTurnoverPct 
+FROM Products p 
+JOIN Stock s ON p.ProductID = s.ProductID 
+JOIN Orders o ON o.OrderDateTime >= s.LastRestocked 
+JOIN Order_Items oi ON o.OrderID = oi.OrderID AND p.ProductID = oi.ProductID 
+WHERE s.LastRestocked >= NOW() - INTERVAL 30 DAY 
+GROUP BY p.ProductID, p.ProductName, s.LastRestocked, s.CurrentStock; 
