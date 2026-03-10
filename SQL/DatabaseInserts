@@ -4,34 +4,73 @@ INSERT INTO Customers (CustomerName, Country, Phone, Email) VALUES
 ('Alice Smith', 'Canada', '519-555-0101', 'alices@email.com'),
 ('Bob Jones', 'USA', '313-555-0202', 'bjones@provider.net'),
 ('Charlie Brown', 'Canada', '416-555-0303', 'charlieb@email.com'),
-('Diana Prince', 'USA', '202-555-0404', 'diana@themyscira.com');
+('Diana Prince', 'USA', '202-555-0404', 'diana@themyscira.com'),
+('Ethan Carter', 'Canada', '519-555-0606', 'ethan.c@email.com'),
+('Fiona Green', 'USA', '313-555-0707', 'fiona.green@email.com'),
+('George Miller', 'Canada', '416-555-0808', 'george.m@email.com'),
+('Hannah Lee', 'USA', '212-555-0909', 'hlee@email.com'),
+('Ian Walker', 'Canada', '519-555-1010', 'ian.walker@email.com'),
+('Julia Adams', 'USA', '313-555-1111', 'julia.adams@email.com');
 
 INSERT INTO Products (ProductName, Category, CurrentPrice) VALUES 
 ('Gaming Laptop', 'Electronics', 1200.00),
 ('Wireless Mouse', 'Accessories', 50.00),
 ('Mechanical Keyboard', 'Accessories', 150.00),
 ('Office Chair', 'Furniture', 300.00),
-('USB-C Cable', 'Accessories', 25.00);
-
-INSERT INTO Stock (ProductID, RestockThreshold, CurrentStock, LastRestocked) VALUES 
-(1, 5, 20, '2026-01-01 09:00:00'), 
-(2, 10, 50, '2026-01-05 10:00:00'), 
-(3, 5, 15, '2026-01-05 10:00:00'), 
-(4, 3, 2, '2026-01-10 11:00:00'),  
-(5, 20, 100, '2026-01-15 08:30:00'); 
+('USB-C Cable', 'Accessories', 25.00),
+('4K Monitor', 'Electronics', 400.00),
+('External SSD 1TB', 'Electronics', 180.00),
+('Desk Lamp', 'Furniture', 45.00),
+('USB-C Hub', 'Accessories', 60.00),
+('Ergonomic Desk', 'Furniture', 450.00);
 
 INSERT INTO Orders (CustomerID, OrderDateTime) VALUES 
 (1, '2026-02-15 14:30:00'), 
 (2, '2026-02-16 09:15:00'), 
 (3, '2026-02-16 11:45:00'), 
-(1, '2026-03-01 16:00:00'); 
+(1, '2026-03-01 16:00:00'),
+(5, '2026-03-02 10:20:00'),
+(6, '2026-03-02 11:10:00'),
+(7, '2026-03-03 09:00:00'),
+(8, '2026-03-03 13:30:00'),
+(9, '2026-03-04 15:45:00'),
+(10, '2026-03-05 16:50:00');
 
 INSERT INTO Order_Items (OrderID, ProductID, Quantity, UnitPrice) VALUES 
 (1, 1, 1, 1200.00), 
 (1, 2, 1, 50.00),   
 (2, 3, 2, 150.00),  
 (3, 4, 1, 300.00),  
-(4, 5, 4, 25.00);   
+(4, 5, 4, 25.00),
+(5, 6, 1, 400.00),
+(6, 7, 1, 180.00),
+(7, 8, 2, 45.00),
+(8, 9, 1, 60.00),
+(9, 10, 1, 450.00);
+
+INSERT INTO Stock (ProductID, RestockThreshold, CurrentStock, LastRestocked) VALUES 
+(1, 5, 20, '2026-01-01 09:00:00'), 
+(2, 10, 50, '2026-01-05 10:00:00'), 
+(3, 5, 15, '2026-01-05 10:00:00'), 
+(4, 3, 2, '2026-01-10 11:00:00'),  
+(5, 20, 100, '2026-01-15 08:30:00'),
+(6, 5, 12, '2026-01-20 10:00:00'),
+(7, 5, 18, '2026-01-22 11:30:00'),
+(8, 10, 35, '2026-01-25 09:15:00'),
+(9, 8, 22, '2026-01-28 13:45:00'),
+(10, 3, 6, '2026-02-01 14:00:00'); 
+
+INSERT INTO StockLog (OrderID, ProductID, LogDate, QuantityChange, StockBefore) VALUES
+(1, 1, '2026-02-15 14:30:00', -1, 21),
+(1, 2, '2026-02-15 14:30:00', -1, 51),
+(2, 3, '2026-02-16 09:15:00', -2, 17),
+(3, 4, '2026-02-16 11:45:00', -1, 3),
+(4, 5, '2026-03-01 16:00:00', -4, 104),
+(5, 6, '2026-03-02 10:20:00', -1, 13),
+(6, 7, '2026-03-02 11:10:00', -1, 19),
+(7, 8, '2026-03-03 09:00:00', -2, 37),
+(8, 9, '2026-03-03 13:30:00', -1, 23),
+(9, 10, '2026-03-04 15:45:00', -1, 7); 
 
 -- Database 2 Inserts
 
@@ -39,31 +78,70 @@ INSERT INTO Customers (CustomerName, Country, Phone, Email) VALUES
 ('Ethan Hunt', 'USA', '313-555-0505', 'ethan@imf.gov'),
 ('Fiona Gallagher', 'USA', '313-555-0606', 'fiona@southside.com'),
 ('George Costanza', 'USA', '212-555-0707', 'gcostanza@vandelay.com'),
-('Hannah Abbott', 'Canada', '519-555-0808', 'hannah.a@email.ca');
+('Hannah Abbott', 'Canada', '519-555-0808', 'hannah.a@email.ca'),
+('Ian Malcolm', 'USA', '313-555-0909', 'ian@jurassic.org'),
+('Jessica Pearson', 'USA', '212-555-1010', 'jpearson@lawfirm.com'),
+('Kyle Reese', 'USA', '313-555-1111', 'kyle@resistance.net'),
+('Lara Croft', 'UK', '020-555-1212', 'lara@croftadventures.com'),
+('Michael Scott', 'USA', '570-555-1313', 'michael@dundermifflin.com'),
+('Nancy Drew', 'USA', '419-555-1414', 'nancy@detective.com');
 
 INSERT INTO Products (ProductName, Category, CurrentPrice) VALUES 
 ('Gaming Laptop', 'Electronics', 1250.00), 
 ('Wireless Mouse', 'Accessories', 50.00), 
 ('4K Monitor', 'Electronics', 400.00),    
 ('HD Webcam', 'Accessories', 80.00),       
-('Ergonomic Desk', 'Furniture', 450.00);  
-
-INSERT INTO Stock (ProductID, RestockThreshold, CurrentStock, LastRestocked) VALUES 
-(1, 10, 25, '2026-01-02 08:00:00'), 
-(2, 15, 60, '2026-01-06 09:00:00'), 
-(3, 5, 10, '2026-01-12 10:30:00'), 
-(4, 20, 45, '2026-01-20 11:00:00'),  
-(5, 2, 5, '2026-02-01 14:00:00'); 
-
+('Ergonomic Desk', 'Furniture', 450.00),
+('Mechanical Keyboard', 'Accessories', 120.00),
+('USB-C Hub', 'Accessories', 65.00),
+('Office Chair', 'Furniture', 300.00),
+('External SSD 1TB', 'Electronics', 180.00),
+('Desk Lamp', 'Furniture', 45.00);
+  
 INSERT INTO Orders (CustomerID, OrderDateTime) VALUES 
 (1, '2026-02-15 14:30:00'), 
 (2, '2026-02-20 10:00:00'), 
 (3, '2026-02-25 13:15:00'), 
-(4, '2026-03-05 11:30:00'); 
+(4, '2026-03-05 11:30:00'),
+(5, '2026-03-06 10:15:00'),
+(6, '2026-03-06 11:00:00'),
+(7, '2026-03-06 12:30:00'),
+(8, '2026-03-07 09:45:00'),
+(9, '2026-03-07 14:20:00'),
+(10, '2026-03-08 16:10:00');
 
 INSERT INTO Order_Items (OrderID, ProductID, Quantity, UnitPrice) VALUES 
 (1, 1, 1, 1250.00), 
 (1, 2, 2, 45.00),  
 (2, 3, 2, 400.00),  
 (3, 4, 1, 80.00),  
-(4, 5, 1, 450.00);
+(4, 5, 1, 450.00),
+(5, 6, 1, 120.00),
+(6, 7, 2, 65.00),
+(7, 8, 1, 300.00),
+(8, 9, 1, 180.00),
+(9, 10, 2, 45.00);
+
+INSERT INTO Stock (ProductID, RestockThreshold, CurrentStock, LastRestocked) VALUES 
+(1, 10, 25, '2026-01-02 08:00:00'), 
+(2, 15, 60, '2026-01-06 09:00:00'), 
+(3, 5, 10, '2026-01-12 10:30:00'), 
+(4, 20, 45, '2026-01-20 11:00:00'),  
+(5, 2, 5, '2026-02-01 14:00:00'),
+(6, 10, 30, '2026-02-02 09:00:00'),
+(7, 15, 50, '2026-02-05 10:00:00'),
+(8, 5, 20, '2026-02-08 11:00:00'),
+(9, 8, 15, '2026-02-12 13:00:00'),
+(10, 12, 40, '2026-02-18 15:00:00');
+
+INSERT INTO StockLog (OrderID, ProductID, LogDate, QuantityChange, StockBefore) VALUES
+(1, 1, '2026-02-15 14:30:00', -1, 26),
+(1, 2, '2026-02-15 14:30:00', -2, 62),
+(2, 3, '2026-02-20 10:00:00', -2, 12),
+(3, 4, '2026-02-25 13:15:00', -1, 46),
+(4, 5, '2026-03-05 11:30:00', -1, 6),
+(5, 6, '2026-03-06 10:15:00', -1, 31),
+(6, 7, '2026-03-06 11:00:00', -2, 52),
+(7, 8, '2026-03-06 12:30:00', -1, 21),
+(8, 9, '2026-03-07 09:45:00', -1, 16),
+(9, 10, '2026-03-07 14:20:00', -2, 42);
