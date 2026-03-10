@@ -1,0 +1,67 @@
+-- Data Warehouse Inserts
+
+INSERT INTO BranchDim (BranchKey, City, Province, Country) VALUES
+(1, 'Windsor', 'Ontario', 'Canada'),
+(2, 'Toronto', 'Ontario', 'Canada');
+
+INSERT INTO CustomerDim (SourceCustomerID, CustomerName, Phone, Email, Country) VALUES
+(1, 'Alice Smith', '519-555-0101', 'alices@email.com', 'Canada'),
+(2, 'Bob Jones', '313-555-0202', 'bjones@provider.net', 'USA'),
+(3, 'Charlie Brown', '416-555-0303', 'charlieb@email.com', 'Canada'),
+(4, 'Diana Prince', '202-555-0404', 'diana@themyscira.com', 'USA'),
+(5, 'Ethan Carter', '519-555-0606', 'ethan.c@email.com', 'Canada'),
+(6, 'Fiona Green', '313-555-0707', 'fiona.green@email.com', 'USA'),
+(7, 'George Miller', '416-555-0808', 'george.m@email.com', 'Canada'),
+(8, 'Hannah Lee', '212-555-0909', 'hlee@email.com', 'USA'),
+(9, 'Ian Walker', '519-555-1010', 'ian.walker@email.com', 'Canada'),
+(10, 'Julia Adams', '313-555-1111', 'julia.adams@email.com', 'USA');
+
+INSERT INTO ProductDim (SourceProductID, ProductName, Category, CurrentPrice) VALUES
+(1, 'Gaming Laptop', 'Electronics', 1200.00),
+(2, 'Wireless Mouse', 'Accessories', 50.00),
+(3, 'Mechanical Keyboard', 'Accessories', 150.00),
+(4, 'Office Chair', 'Furniture', 300.00),
+(5, 'USB-C Cable', 'Accessories', 25.00),
+(6, '4K Monitor', 'Electronics', 400.00),
+(7, 'External SSD 1TB', 'Electronics', 180.00),
+(8, 'Desk Lamp', 'Furniture', 45.00),
+(9, 'USB-C Hub', 'Accessories', 60.00),
+(10, 'Ergonomic Desk', 'Furniture', 450.00);
+
+INSERT INTO DatetimeDim (DateKey, FullDate, SaleTime, Month, Quarter, Year) VALUES
+(20260215, '2026-02-15', '14:30:00', 'February', 1, 2026),
+(20260216, '2026-02-16', '09:15:00', 'February', 1, 2026),
+(20260217, '2026-02-16', '11:45:00', 'February', 1, 2026),
+(20260218, '2026-03-01', '16:00:00', 'March', 1, 2026),
+(20260219, '2026-03-02', '10:20:00', 'March', 1, 2026),
+(20260301, '2026-03-02', '11:10:00', 'March', 1, 2026),
+(20260302, '2026-03-03', '09:00:00', 'March', 1, 2026),
+(20260303, '2026-03-03', '13:30:00', 'March', 1, 2026),
+(20260304, '2026-03-04', '15:45:00', 'March', 1, 2026),
+(20260305, '2026-03-05', '16:50:00', 'March', 1, 2026);
+
+INSERT INTO FactSales 
+(ProductKey, CustomerKey, DateKey, BranchKey, SourceOrderID, Quantity, UnitPrice, Revenue) VALUES
+(1, 1, 20260215, 1, 1, 1, 1200.00, 1200.00),
+(2, 1, 20260215, 1, 1, 1, 50.00, 50.00),
+(3, 2, 20260216, 1, 2, 2, 150.00, 300.00),
+(4, 3, 20260216, 1, 3, 1, 300.00, 300.00),
+(5, 1, 20260301, 1, 4, 4, 25.00, 100.00),
+(6, 5, 20260302, 2, 5, 1, 400.00, 400.00),
+(7, 6, 20260302, 2, 6, 1, 180.00, 180.00),
+(8, 7, 20260303, 2, 7, 2, 45.00, 90.00),
+(9, 8, 20260303, 2, 8, 1, 60.00, 60.00),
+(10, 9, 20260304, 2, 9, 1, 450.00, 450.00);
+
+INSERT INTO FactInventory 
+(ProductKey, DateKey, BranchKey, CurrentStock, RestockThreshold) VALUES
+(1, 20260215, 1, 20, 5),
+(2, 20260215, 1, 50, 10),
+(3, 20260216, 1, 15, 5),
+(4, 20260216, 1, 2, 3),
+(5, 20260301, 1, 100, 20),
+(6, 20260302, 2, 12, 5),
+(7, 20260302, 2, 18, 5),
+(8, 20260303, 2, 35, 10),
+(9, 20260303, 2, 22, 8),
+(10, 20260304, 2, 6, 3);
