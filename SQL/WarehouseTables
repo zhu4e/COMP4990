@@ -28,7 +28,7 @@ CREATE TABLE ProductDim (
 );
 
 CREATE TABLE DatetimeDim (
-    DateKey INT NOT NULL,
+    DateKey INT NOT NULL AUTO_INCREMENT,
     FullDate DATE,
     SaleTime TIME,
     Month VARCHAR(20),
@@ -36,8 +36,6 @@ CREATE TABLE DatetimeDim (
     Year INT,
     PRIMARY KEY (DateKey)
 );
-
-ALTER TABLE DatetimeDim MODIFY DateKey INT AUTO_INCREMENT;
 
 -- Fact Tables
 
