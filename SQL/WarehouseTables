@@ -37,6 +37,8 @@ CREATE TABLE DatetimeDim (
     PRIMARY KEY (DateKey)
 );
 
+ALTER TABLE DatetimeDim MODIFY DateKey INT AUTO_INCREMENT;
+
 -- Fact Tables
 
 CREATE TABLE FactSales (
