@@ -1,3 +1,4 @@
+-- Database 1 Inserts
 
 INSERT INTO Customers (CustomerName, Country, Phone, Email) VALUES 
 ('Alice Smith', 'Canada', '519-555-0101', 'alices@email.com'),
@@ -31,3 +32,38 @@ INSERT INTO Order_Items (OrderID, ProductID, Quantity, UnitPrice) VALUES
 (2, 3, 2, 150.00),  
 (3, 4, 1, 300.00),  
 (4, 5, 4, 25.00);   
+
+-- Database 2 Inserts
+
+INSERT INTO Customers (CustomerName, Country, Phone, Email) VALUES 
+('Ethan Hunt', 'USA', '313-555-0505', 'ethan@imf.gov'),
+('Fiona Gallagher', 'USA', '313-555-0606', 'fiona@southside.com'),
+('George Costanza', 'USA', '212-555-0707', 'gcostanza@vandelay.com'),
+('Hannah Abbott', 'Canada', '519-555-0808', 'hannah.a@email.ca');
+
+INSERT INTO Products (ProductName, Category, CurrentPrice) VALUES 
+('Gaming Laptop', 'Electronics', 1250.00), 
+('Wireless Mouse', 'Accessories', 50.00), 
+('4K Monitor', 'Electronics', 400.00),    
+('HD Webcam', 'Accessories', 80.00),       
+('Ergonomic Desk', 'Furniture', 450.00);  
+
+INSERT INTO Stock (ProductID, RestockThreshold, CurrentStock, LastRestocked) VALUES 
+(1, 10, 25, '2026-01-02 08:00:00'), 
+(2, 15, 60, '2026-01-06 09:00:00'), 
+(3, 5, 10, '2026-01-12 10:30:00'), 
+(4, 20, 45, '2026-01-20 11:00:00'),  
+(5, 2, 5, '2026-02-01 14:00:00'); 
+
+INSERT INTO Orders (CustomerID, OrderDateTime) VALUES 
+(1, '2026-02-15 14:30:00'), 
+(2, '2026-02-20 10:00:00'), 
+(3, '2026-02-25 13:15:00'), 
+(4, '2026-03-05 11:30:00'); 
+
+INSERT INTO Order_Items (OrderID, ProductID, Quantity, UnitPrice) VALUES 
+(1, 1, 1, 1250.00), 
+(1, 2, 2, 45.00),  
+(2, 3, 2, 400.00),  
+(3, 4, 1, 80.00),  
+(4, 5, 1, 450.00);
