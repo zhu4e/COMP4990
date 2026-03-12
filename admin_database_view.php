@@ -19,30 +19,31 @@ function queryAll(mysqli $conn, string $table) {
   return $res;
 }
 
-function renderTable($result) {
-  if (is_array($result) && isset($result["__error"])) {
-    echo "<div class='alert error'><strong>Error:</strong> " . e($result["__error"]) . "</div>";
-    return;
-  }
-
-  $fields = $result->fetch_fields();
-
-  echo "<div class='table-wrap'>";
-  echo "<table class='data-table'><thead><tr>";
-  foreach ($fields as $f) echo "<th>" . e($f->name) . "</th>";
-  echo "</tr></thead><tbody>";
-
-  while ($row = $result->fetch_assoc()) {
-    echo "<tr>";
-    foreach ($fields as $f) echo "<td>" . e($row[$f->name] ?? "") . "</td>";
-    echo "</tr>";
-  }
-
-  echo "</tbody></table></div>";
+// Function to render all tables
+function renderAllTables(mysqli $conn, array $tables) {
+    foreach ($tables as $t) {
+        $res = $conn->query("SELECT * FROM `$t` LIMIT 50");
+        if (!$res) {
+            echo "<div class='alert error'><strong>Error:</strong> " . e($conn->error) . "</div>";
+            continue;
+        }
+        echo "<h3>" . e($t) . "</h3>";
+        echo "<div class='table-wrap'><table class='data-table'><thead><tr>";
+        foreach ($res->fetch_fields() as $f) echo "<th>" . e($f->name) . "</th>";
+        echo "</tr></thead><tbody>";
+        $res->data_seek(0);
+        while ($row = $res->fetch_assoc()) {
+            echo "<tr>";
+            foreach ($row as $v) echo "<td>" . e($v) . "</td>";
+            echo "</tr>";
+        }
+        echo "</tbody></table></div><br>";
+    }
 }
 
-$db1_tables = ["Customer", "Product", "Purchases"];
-$db2_tables = ["Customers", "CustomerInfo", "Item", "Purchase"];
+// Tables for each database
+$db1_tables = ["Customers","Products","Orders","Order_Items","Stock","StockLog"];
+$db2_tables = ["Customers","Products","Orders","Order_Items","Stock","StockLog"];
 ?>
 
 <div class="page database-page">
@@ -52,30 +53,23 @@ $db2_tables = ["Customers", "CustomerInfo", "Item", "Purchase"];
       <p class="muted">Full database browsing access.</p>
     </div>
     <div class="topbar-right">
-      <a class="btn secondary" href="admin_index.php">Back to Dashboard</a>
+      <a class="btn secondary" href="admin_dashboard.php">Back to Dashboard</a>
       <a class="btn" href="logout.php">Logout</a>
     </div>
   </div>
 
-  <div class="grid-2 wide">
+  <!-- Tables side by side -->
+    <div class="grid-2 wide" style="margin-top:20px;">
+        <section class="panel">
+            <div class="panel-head"><h2>Database 1</h2></div>
+            <?php renderAllTables($conn_db1, $db1_tables); ?>
+        </section>
 
-    <section class="panel">
-      <h2>Database 1</h2>
-      <?php foreach ($db1_tables as $t): ?>
-        <h3><?= e($t) ?></h3>
-        <?php renderTable(queryAll($conn_db1, $t)); ?>
-      <?php endforeach; ?>
-    </section>
-
-    <section class="panel">
-      <h2>Database 2</h2>
-      <?php foreach ($db2_tables as $t): ?>
-        <h3><?= e($t) ?></h3>
-        <?php renderTable(queryAll($conn_db2, $t)); ?>
-      <?php endforeach; ?>
-    </section>
-
-  </div>
+        <section class="panel">
+            <div class="panel-head"><h2>Database 2</h2></div>
+            <?php renderAllTables($conn_db2, $db2_tables); ?>
+        </section>
+    </div>
 </div>
 
 <?php include "includes/footer.php"; ?>
