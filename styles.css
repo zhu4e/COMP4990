@@ -39,30 +39,68 @@ a:hover{ text-decoration: underline; }
 /* ---------- Header ---------- */
 
 .site-header{
-  width: 100%;
-  background-color: #506d94;
-  color: white;
-  padding: 24px 32px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    padding:16px 40px;
+    background:linear-gradient(135deg,#2c3e50,#34495e);
+    color:white;
 
-  position: relative;
+    box-shadow:0 3px 10px rgba(0,0,0,0.15);
+    border-bottom:4px solid #080908;
 }
 
-.site-header h1{
-  margin: 0;
-  font-size: 26px;
-  letter-spacing: -0.02em;
+/* Title */
+.site-title{
+    margin:0;
+    font-size:22px;
 }
 
+/* Center navigation */
+.header-nav{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+
+    display:flex;
+    gap:30px;
+}
+
+/* Nav links */
+.header-nav a{
+    color:white;
+    text-decoration:none;
+    font-weight:500;
+}
+
+.header-nav a:hover{
+    border-bottom:2px solid white;
+}
+
+/* Right section */
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+/* User badge */
+.user-badge{
+    background:#16a085;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:13px;
+}
+
+/* Logout button */
 .logout{
-  position: absolute;
-  right: 24px;
-  color: white;
-  font-weight: 600;
-  text-decoration: none;
+    background:#e74c3c;
+    padding:8px 16px;
+    border-radius:6px;
+    color:white;
+    text-decoration:none;
 }
 
 /* ---------- Layout helpers ---------- */
