@@ -51,7 +51,10 @@ $bodyClass   = pathinfo($currentPage, PATHINFO_FILENAME);
             <a href="analyst_database_view.php">Databases</a>
             <a href="analyst_data_warehouse_view.php">Warehouse</a>
           <?php endif; ?>
-
+  
+          <?php if (isset($_SESSION['role']) && strtolower($_SESSION['role']) === 'user'): ?>
+            <a href="user_dashboard.php">Sales Dashboard</a>
+          <?php endif; ?>
 
         </nav>
 
