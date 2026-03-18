@@ -101,8 +101,6 @@ $result = $conn_app->query("SELECT id, username, role FROM users ORDER BY id ASC
     <option value="user">Standard User</option>
     <option value="analyst">Data Analyst</option>
     <option value="admin">Administrator</option>
-                  <option value="user">Standard User</option>
-                  <option value="admin">Administrator</option>
               </select>
 
               <button type="submit" name="add_user" class="btn" style="margin-top: 10px;">Create User</button>
