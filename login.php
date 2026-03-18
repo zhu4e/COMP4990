@@ -19,8 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = $_POST['password'] ?? '';
 
     if (!empty($username) && !empty($password)) {
-        // Prepare query
-        $stmt = $conn_app->prepare("SELECT id, password, role FROM users WHERE username = ? AND is_active=1");
+        // ✅ FIXED: removed is_active
+        $stmt = $conn_app->prepare("SELECT id, password, role FROM users WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             elseif ($password === $db_pass) {
                 $isValid = true;
 
-                // Upgrade to hashed password
+                // upgrade to hashed password
                 $new_hash = password_hash($password, PASSWORD_DEFAULT);
                 $upgrade = $conn_app->prepare("UPDATE users SET password = ? WHERE id = ?");
                 $upgrade->bind_param("si", $new_hash, $user_id);
@@ -55,9 +55,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 // Redirect based on role
                 if ($role === 'admin') {
-                    header("Location: admin_index.php");
+                    header("Location: admin_dashboard.php");
                 } else { // analyst
-                    header("Location: analyst_index.php");
+                    header("Location: analyst_dashboard.php");
                 }
                 exit();
             } else {
