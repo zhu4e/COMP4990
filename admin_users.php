@@ -98,6 +98,9 @@ $result = $conn_app->query("SELECT id, username, role FROM users ORDER BY id ASC
               <input type="password" name="new_password" placeholder="Password" required autocomplete="new-password">
               
               <select name="new_role" class="sql-select" style="width: 100%; margin-top: 6px;">
+    <option value="user">Standard User</option>
+    <option value="analyst">Data Analyst</option>
+    <option value="admin">Administrator</option>
                   <option value="user">Standard User</option>
                   <option value="admin">Administrator</option>
               </select>
