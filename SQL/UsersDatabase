@@ -1,17 +1,10 @@
-CREATE DATABASE IF NOT EXISTS database_users;
-
--- Create App User and Grant Permissions
-CREATE USER IF NOT EXISTS 'app_user'@'localhost' IDENTIFIED BY 'admin123';
-GRANT ALL PRIVILEGES ON database_users.* TO 'app_user'@'localhost';
-FLUSH PRIVILEGES;
-
-USE database_users;
-
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'analyst') DEFAULT 'admin'
 );
 
 -- The default admin account
-INSERT INTO users (username, password) VALUES ('admin', 'admin123');
+INSERT INTO users (username, password, role) VALUES ('admin', 'admin123', 'admin');
+INSERT INTO users (username, password, role) VALUES ('analyst', 'analyst123', 'analyst');
