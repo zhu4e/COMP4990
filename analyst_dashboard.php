@@ -3,7 +3,7 @@ require_once "includes/config.php";
 require_once "includes/auth.php";
 session_start();
 checkAuth();
-requireRole("analyst"); // ✅ FIXED
+requireRole("analyst"); // analyst role
 
 $pageTitle = "Analyst Dashboard";
 include "includes/header.php";
@@ -117,10 +117,15 @@ if ($result_chart) {
 
   </div>
 
-  <!-- ✅ Analyst only gets warehouse access -->
+  <!-- Analyst Access -->
+  <div class="dashboard-section">
+    <h2>Operational Databases</h2>
+    <a class="btn" href="analyst_database_view.php">View Databases</a>
+  </div>
+
   <div class="dashboard-section">
     <h2>Data Warehouse</h2>
-    <a class="btn" href="admin_data_warehouse_view.php">View Warehouse</a>
+    <a class="btn" href="analyst_data_warehouse_view.php">View Warehouse</a>
   </div>
 
   <a class="logout-link" href="logout.php">Logout</a>
