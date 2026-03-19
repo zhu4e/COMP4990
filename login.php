@@ -91,6 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <ul class="muted">
     <li>Admin: admin / admin123</li>
     <li>Analyst: analyst / analyst123</li>
+    <li>User: user / user123</li>
   </ul>
 </div>
 
