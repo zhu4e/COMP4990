@@ -18,11 +18,13 @@ $error = "";
 // Adding users
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_user'])) {
     $new_user = trim($_POST['new_username'] ?? '');
-    $new_pass = $_POST['new_password'] ?? '';
-    $new_role = $_POST['new_role'] ?? 'user'; // take the role from the dropdown menu
+    
+    // ✅ FIX: hash password
+    $new_pass = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+    
+    $new_role = $_POST['new_role'] ?? 'user';
 
-    if (!empty($new_user) && !empty($new_pass)) {
-        // Insert username, password, and role
+    if (!empty($new_user) && !empty($_POST['new_password'])) {
         $stmt = $conn_app->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $new_user, $new_pass, $new_role);
         
@@ -42,8 +44,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['delete_user'])) {
     $delete_id = (int)$_POST['delete_id'];
     $delete_username = $_POST['delete_username'];
     
-    // Prevent admin from deleting themselves
-    if ($delete_username === $_SESSION['user']) { 
+    // ✅ FIX: correct session variable
+    if ($delete_username === $_SESSION['username']) { 
         $error = "Action denied: You cannot delete your own account while logged in!";
     } else {
         $stmt = $conn_app->prepare("DELETE FROM users WHERE id = ?");
@@ -98,9 +100,9 @@ $result = $conn_app->query("SELECT id, username, role FROM users ORDER BY id ASC
               <input type="password" name="new_password" placeholder="Password" required autocomplete="new-password">
               
               <select name="new_role" class="sql-select" style="width: 100%; margin-top: 6px;">
-    <option value="user">Standard User</option>
-    <option value="analyst">Data Analyst</option>
-    <option value="admin">Administrator</option>
+                <option value="user">Standard User</option>
+                <option value="analyst">Data Analyst</option>
+                <option value="admin">Administrator</option>
               </select>
 
               <button type="submit" name="add_user" class="btn" style="margin-top: 10px;">Create User</button>
@@ -112,7 +114,7 @@ $result = $conn_app->query("SELECT id, username, role FROM users ORDER BY id ASC
     <section class="panel">
       <div class="panel-head">
         <h2>Current Users</h2>
-        <span class="tag">Database: database_users</span>
+        <span class="tag">Database: add_users</span>
       </div>
       <div class="table-wrap">
         <table class="data-table">
@@ -129,15 +131,22 @@ $result = $conn_app->query("SELECT id, username, role FROM users ORDER BY id ASC
             <tr>
               <td><?= htmlspecialchars($row['id']) ?></td>
               <td><?= htmlspecialchars($row['username']) ?></td>
+              
+              <!-- ✅ FIXED ROLE DISPLAY -->
               <td>
                 <?php if ($row['role'] === 'admin'): ?>
-                  <span class="tag" style="background: rgba(220,38,38,.1); color: #dc2626; border-color: rgba(220,38,38,.2);">Admin</span>
+                  <span class="tag" style="background: rgba(220,38,38,.1); color: #dc2626;">Admin</span>
+
+                <?php elseif ($row['role'] === 'analyst'): ?>
+                  <span class="tag" style="background: rgba(37,99,235,.1); color: #2563eb;">Analyst</span>
+
                 <?php else: ?>
-                  <span class="tag" style="background: rgba(15,23,42,.1); color: var(--text); border-color: rgba(15,23,42,.2);">User</span>
+                  <span class="tag" style="background: rgba(15,23,42,.1); color: var(--text);">User</span>
                 <?php endif; ?>
               </td>
+
               <td>
-                <?php if ($row['username'] !== $_SESSION['user']): ?>
+                <?php if ($row['username'] !== $_SESSION['username']): ?>
                   <form method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to completely delete user: <?= htmlspecialchars($row['username']) ?>?');">
                     <input type="hidden" name="delete_id" value="<?= $row['id'] ?>">
                     <input type="hidden" name="delete_username" value="<?= htmlspecialchars($row['username']) ?>">
