@@ -1,57 +1,36 @@
  1. Description: Retrieves the CurrentStock from the Stock table where the ProductID matches the value stored in the variable $product_id. This query is used to verify that there is enough inventory available for an order. 
-
 SELECT CurrentStock FROM Stock  
-
 WHERE ProductID = $product_id; 
 
 2. Description: Updates the Stock table by subtracting the value stored in $purchased_quantity from the CurrentStock where the ProductID matches the variable $product_id. This query is used to adjust inventory levels after a customer orders a product. 
-
 UPDATE Stock SET CurrentStock = CurrentStock - $purchased_quantity WHERE ProductID = $product_id; 
 
 3. Description: Retrieves all columns from the Orders table where the CustomerID matches the variable $customer_id, filtering orders placed within the last 30 days. This query is used to find recent orders. 
-
 SELECT * FROM Orders  
-
 WHERE CustomerID = $customer_id  
-
 AND OrderDateTime >= DATE_SUB(NOW(), INTERVAL 30 DAY); 
 
 4. Description: Retrieves the ProductName, Quantity, and UnitPrice by joining the Order_Items and Product tables where the OrderID matches the variable $order_id. This query is used to give the line items for a customer's receipt after an order. 
-
 SELECT P.ProductName, OI.Quantity, OI.UnitPrice  
-
 FROM Order_Items OI  
-
 JOIN Product P ON OI.ProductID = P.ProductID  
-
 WHERE OI.OrderID = $order_id; 
 
 5. Description: Updates the Customer table by setting the Phone and Country to the values stored in the variables $new_phone and $new_country. This is applied to the row where the CustomerID matches $customer_id. This query is used to update a customer’s contact information. 
-
 UPDATE Customer  
-
 SET Phone = '$new_phone', Country = '$new_country'  
-
 WHERE CustomerID = $customer_id; 
 
 6. Description: Updates the Product table by setting the CurrentPrice to the value stored in the variable $new_price where the ProductID matches $product_id. This query is used to apply price changes to a product. 
-
 UPDATE Product  
-
 SET CurrentPrice = $new_price  
-
 WHERE ProductID = $product_id; 
 
 7. Description: Retrieves the ProductName and CurrentPrice from the Product table where the Category is 'Electronics'. This query is used to display a list of all electronic items and their current selling prices. 
-
 SELECT ProductName, CurrentPrice  
-
 FROM Product  
-
 WHERE Category = 'Electronics'; 
 
 8. Description: Calculates the total number of rows within the Customer table. This query is used to see the total count of registered users currently existing in the branch database we are querying. 
-
 SELECT COUNT(*) AS TotalRegisteredCustomers  
-
 FROM Customer; 
