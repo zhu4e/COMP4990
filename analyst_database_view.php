@@ -67,8 +67,8 @@ function renderAllTables(mysqli $conn, array $tables) {
 }
 
 // Tables for each database
-$db1_tables = ["Customer","Product","Purchases"];
-$db2_tables = ["Customers","CustomerInfo","Item","Purchase"];
+$db1_tables = ["Customers","Products","Orders","Order_Items","Stock","StockLog"];
+$db2_tables = ["Customers","Products","Orders","Order_Items","Stock","StockLog"];
 
 $dbChoice = $_POST["db_choice"] ?? "db1";
 $sqlQuery = $_POST["sql_query"] ?? "";
@@ -86,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && !empty($_POST["run_sql"])) {
     <div class="topbar">
         <h1>Analyst Database View</h1>
         <div>
-            <a class="btn secondary" href="analyst_index.php">Back</a>
+            <a class="btn secondary" href="analyst_dashboard.php">Back</a>
             <a class="btn" href="logout.php">Logout</a>
         </div>
     </div>
@@ -95,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && !empty($_POST["run_sql"])) {
     <section class="panel">
         <form method="POST">
             <div style="margin-bottom:10px;">
-                <label>Database:</label>
+                <label>Database Query:</label>
                 <select name="db_choice">
                     <option value="db1" <?= ($dbChoice==="db1")?"selected":"" ?>>Database 1</option>
                     <option value="db2" <?= ($dbChoice==="db2")?"selected":"" ?>>Database 2</option>
