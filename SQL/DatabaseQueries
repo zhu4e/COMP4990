@@ -1,93 +1,57 @@
--- 1. Inventory Accuracy Check 
--- This query calculates what the stock should be based on the StockLog and compares it to the CurrentStock in the Stock table to find differences. 
-SELECT  
-   p.ProductName, 
-   s.CurrentStock AS ActualStock, 
-   (s.CurrentStock - SUM(sl.QuantityChange)) AS ExpectedStock 
-FROM Products p 
-JOIN Stock s ON p.ProductID = s.ProductID 
-JOIN StockLog sl ON p.ProductID = sl.ProductID 
-GROUP BY p.ProductID, p.ProductName, s.CurrentStock; 
+ 1. Description: Retrieves the CurrentStock from the Stock table where the ProductID matches the value stored in the variable $product_id. This query is used to verify that there is enough inventory available for an order. 
 
--- 2. Product Popularity by Country 
--- This shows which product is the #1 bestseller in each country.   
+SELECT CurrentStock FROM Stock  
 
-SELECT Country, ProductName, TotalQty 
-FROM ( 
-   SELECT  
-       c.Country,  
-       p.ProductName,  
-       SUM(oi.Quantity) AS TotalQty, 
-       RANK() OVER (PARTITION BY c.Country ORDER BY SUM(oi.Quantity) DESC) as Rnk 
-   FROM Order_Items oi 
-   JOIN Products p ON oi.ProductID = p.ProductID 
-   JOIN Orders o ON oi.OrderID = o.OrderID 
-   JOIN Customers c ON o.CustomerID = c.CustomerID 
-   GROUP BY c.Country, p.ProductName 
-) AS RankedProducts 
-WHERE Rnk = 1; 
+WHERE ProductID = $product_id; 
 
--- 3. Slow Moving Inventory 
--- Finds products that have a high Current Stock but have not appeared in any Orders for the last 6 months. 
-SELECT p.ProductName, s.CurrentStock 
-FROM Products p 
-JOIN Stock s ON p.ProductID = s.ProductID 
-WHERE s.CurrentStock > 50 
-AND p.ProductID NOT IN ( 
-   SELECT oi.ProductID  
-   FROM Order_Items oi 
-   JOIN Orders o ON oi.OrderID = o.OrderID 
-   WHERE o.OrderDateTime > DATE_SUB(NOW(), INTERVAL 6 MONTH) 
-); 
+2. Description: Updates the Stock table by subtracting the value stored in $purchased_quantity from the CurrentStock where the ProductID matches the variable $product_id. This query is used to adjust inventory levels after a customer orders a product. 
 
--- 4. Monthly Sales Growth Comparison 
--- Calculates the total revenue for the current month and compares it to the previous month. 
-SELECT  
-    (SELECT SUM(Quantity * UnitPrice)  
-     FROM Order_Items oi  
-     JOIN Orders o ON oi.OrderID = o.OrderID  
-     WHERE o.OrderDateTime >= CURDATE() - INTERVAL 1 MONTH) AS CurrentMonthRev, 
-    (SELECT SUM(Quantity * UnitPrice)  
-     FROM Order_Items oi  
-     JOIN Orders o ON oi.OrderID = o.OrderID  
-     WHERE o.OrderDateTime >= CURDATE() - INTERVAL 2 MONTH  
-       AND o.OrderDateTime < CURDATE() - INTERVAL 1 MONTH) AS LastMonthRev; 
+UPDATE Stock SET CurrentStock = CurrentStock - $purchased_quantity WHERE ProductID = $product_id; 
 
--- 5. Discount Impact Analysis  
--- This query identifies items sold below the current price from discounts and compares the average quantity per order for discounted sales versus full-price sales to see if lowering the price increased quantity per order. 
-WITH SaleComparison AS ( 
-   SELECT  
-       oi.ProductID, 
-       p.ProductName, 
-       oi.Quantity, 
-       CASE  
-           WHEN oi.UnitPrice < p.CurrentPrice THEN 'Discounted' 
-           ELSE 'Full Price' 
-       END AS PriceStatus 
-   FROM Order_Items oi 
-   JOIN Products p ON oi.ProductID = p.ProductID 
-) 
-SELECT  
-   ProductName, 
-   PriceStatus, 
-   COUNT(*) AS TotalTransactions, 
-   SUM(Quantity) AS TotalUnitsSold, 
-   AVG(Quantity) AS AvgUnitsPerOrder 
-FROM SaleComparison 
-GROUP BY ProductName, PriceStatus 
-ORDER BY ProductName, PriceStatus; 
+3. Description: Retrieves all columns from the Orders table where the CustomerID matches the variable $customer_id, filtering orders placed within the last 30 days. This query is used to find recent orders. 
 
--- 6. Post-Restock Sales Query 
--- This query looks at products that were restocked in the last 30 days and calculates how many units have been sold since the restock date. 
-SELECT  
-   p.ProductName, 
-   s.LastRestocked, 
-   s.CurrentStock, 
-   SUM(oi.Quantity) AS UnitsSoldSinceRestock, 
-   (SUM(oi.Quantity) / s.CurrentStock) * 100 AS InventoryTurnoverPct 
-FROM Products p 
-JOIN Stock s ON p.ProductID = s.ProductID 
-JOIN Orders o ON o.OrderDateTime >= s.LastRestocked 
-JOIN Order_Items oi ON o.OrderID = oi.OrderID AND p.ProductID = oi.ProductID 
-WHERE s.LastRestocked >= NOW() - INTERVAL 30 DAY 
-GROUP BY p.ProductID, p.ProductName, s.LastRestocked, s.CurrentStock; 
+SELECT * FROM Orders  
+
+WHERE CustomerID = $customer_id  
+
+AND OrderDateTime >= DATE_SUB(NOW(), INTERVAL 30 DAY); 
+
+4. Description: Retrieves the ProductName, Quantity, and UnitPrice by joining the Order_Items and Product tables where the OrderID matches the variable $order_id. This query is used to give the line items for a customer's receipt after an order. 
+
+SELECT P.ProductName, OI.Quantity, OI.UnitPrice  
+
+FROM Order_Items OI  
+
+JOIN Product P ON OI.ProductID = P.ProductID  
+
+WHERE OI.OrderID = $order_id; 
+
+5. Description: Updates the Customer table by setting the Phone and Country to the values stored in the variables $new_phone and $new_country. This is applied to the row where the CustomerID matches $customer_id. This query is used to update a customer’s contact information. 
+
+UPDATE Customer  
+
+SET Phone = '$new_phone', Country = '$new_country'  
+
+WHERE CustomerID = $customer_id; 
+
+6. Description: Updates the Product table by setting the CurrentPrice to the value stored in the variable $new_price where the ProductID matches $product_id. This query is used to apply price changes to a product. 
+
+UPDATE Product  
+
+SET CurrentPrice = $new_price  
+
+WHERE ProductID = $product_id; 
+
+7. Description: Retrieves the ProductName and CurrentPrice from the Product table where the Category is 'Electronics'. This query is used to display a list of all electronic items and their current selling prices. 
+
+SELECT ProductName, CurrentPrice  
+
+FROM Product  
+
+WHERE Category = 'Electronics'; 
+
+8. Description: Calculates the total number of rows within the Customer table. This query is used to see the total count of registered users currently existing in the branch database we are querying. 
+
+SELECT COUNT(*) AS TotalRegisteredCustomers  
+
+FROM Customer; 
