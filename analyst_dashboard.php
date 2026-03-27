@@ -51,7 +51,7 @@ if ($result_inventory && $row = $result_inventory->fetch_assoc()) {
 }
 
 // =======================
-// Revenue Over Time (for chart)
+// Revenue Over Time (chart)
 // =======================
 $dates = [];
 $revenues = [];
@@ -109,7 +109,7 @@ if ($result_chart) {
 
     </div>
 
-    <!-- ✅ CHART -->
+    <!-- CHART -->
     <div style="margin-top:40px;">
         <h2>Revenue Over Time</h2>
         <canvas id="revenueChart"></canvas>
@@ -132,7 +132,7 @@ if ($result_chart) {
 
 </div>
 
-<!-- ✅ Chart.js -->
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
