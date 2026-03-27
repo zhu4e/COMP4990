@@ -1,181 +1,95 @@
 1. Description: This query returns one row per product showing the number of days it was out of stock over a period. This measures how frequently each product experienced stockouts. The source databases do not store daily stock states, so it cannot determine how many days a product had zero inventory in the past. 
-
 SELECT p.ProductName, COUNT(*) AS DaysOutOfStock 
-
 FROM FactInventory fi 
-
 JOIN ProductDim p ON fi.ProductKey = p.ProductKey 
-
 WHERE fi.CurrentStock = 0 
-
 GROUP BY p.ProductName; 
 
 2. Description: This returns one row per calendar date showing the total stock across all products and branches on that day. It sums the CurrentStock values from FactInventory and groups them by date using DatetimeDim. The output is a time series of overall inventory levels. The source only stores current stock and stock logs. To get stock for each past day, you would need to reconstruct it by replaying all log changes, which is complex and unreliable 
-
 SELECT d.FullDate, SUM(fi.CurrentStock) AS TotalStock 
-
 FROM FactInventory fi 
-
 JOIN DatetimeDim d ON fi.DateKey = d.DateKey 
-
 GROUP BY d.FullDate 
-
 ORDER BY d.FullDate; 
 
- 
-
- 
-
 3. Description: Calculates the total lifetime spend of customers by summing the revenue from the FactSales table and grouping the original SourceCustomerID from the CustomerDim table, aggregating all purchases made by a single person. This query is used to identify the top 5 highest-value customers. 
-
 SELECT 
-
     c.SourceCustomerID, 
-
     c.CustomerName, 
-
     SUM(f.Revenue) AS TotalLifetimeSpend 
-
 FROM FactSales f 
-
 JOIN CustomerDim c ON f.CustomerKey = c.CustomerKey 
-
 GROUP BY c.SourceCustomerID, c.CustomerName 
-
 ORDER BY TotalLifetimeSpend DESC 
-
 LIMIT 5; 
 
 4. Description: Aggregates the total revenue and the count of distinct orders from the FactSales table, grouped by the year and quarter from the DatetimeDim table. This query assesses quarterly business performance and sales trends. Because the source databases are isolated by their geographic locations, this query cannot run on the source databases, as it requires the centralized warehouse. 
-
 SELECT 
-
     d.Year, 
-
     d.Quarter, 
-
     SUM(f.Revenue) AS QuarterlyRevenue, 
-
     COUNT(DISTINCT f.SourceOrderID) AS NumberOfOrders 
-
 FROM FactSales f 
-
 JOIN DatetimeDim d ON f.DateKey = d.DateKey 
-
 GROUP BY d.Year, d.Quarter 
-
 ORDER BY d.Year, d.Quarter; 
 
 5. Description: Identifies distinct products from the ProductDim table that exist in the FactInventory table but do not have any sales records in the FactSales table. This query is used to find stagnant inventory, showing products that have never been sold. 
-
 SELECT DISTINCT 
-
     p.ProductName 
-
 FROM ProductDim p 
-
 JOIN FactInventory i ON p.ProductKey = i.ProductKey 
-
 WHERE p.ProductKey NOT IN ( 
-
     SELECT ProductKey FROM FactSales 
-
 ); 
 
 6. Description: Uses a window function to rank product categories based on their total generated revenue, partitioned by the year and month from the DatetimeDim table. It then filters the subquery to only return the category with a rank of 1. This query is used to determine the most profitable product category for every month.  
-
 SELECT * 
-
 FROM ( 
-
     SELECT 
-
         d.Month, 
-
         d.Year, 
-
         p.Category, 
-
         SUM(f.Revenue) AS Revenue, 
-
         RANK() OVER (PARTITION BY d.Year, d.Month ORDER BY SUM(f.Revenue) DESC) AS SalesRank 
-
     FROM FactSales f 
-
     JOIN ProductDim p ON f.ProductKey = p.ProductKey 
-
     JOIN DatetimeDim d ON f.DateKey = d.DateKey 
-
     GROUP BY d.Year, d.Month, p.Category 
-
 ) AS RankedSales 
-
 WHERE SalesRank = 1; 
 
 7. Description: This query scans the history of the warehouse to find items that have been sold at multiple different prices over time, displaying the lowest and highest historical selling prices. This is used to track the pricing history of frequently updated products. 
-
 SELECT * 
-
 P.ProductName, P.Category,  
-
 COUNT(DISTINCT FS.UnitPrice) AS UniquePricePointsSold, 
-
 MIN(FS.UnitPrice) AS LowestHistoricalPrice,  
-
 MAX(FS.UnitPrice) AS HighestHistoricalPrice 
-
 FROM FactSales FS  
-
 JOIN ProductDim P ON FS.ProductKey = P.ProductKey  
-
 GROUP BY P.ProductName, P.Category  
-
 HAVING COUNT(DISTINCT FS.UnitPrice) > 1  
-
 ORDER BY UniquePricePointsSold DESC; 
 
- 
-
 8. Description: Retrieves the branch key, city, product details, current stock, and restock threshold by joining FactInventory, BranchDim, and ProductDim. It filters inventory records where the current stock level is below the restock threshold. This query is used to monitor inventory snapshots to identify locations needing restocking.  
-
 SELECT 
-
     b.BranchKey, 
-
     b.City, 
-
     p.ProductKey, 
-
     p.ProductName, 
-
     i.CurrentStock, 
-
     i.RestockThreshold 
-
 FROM FactInventory i 
-
 JOIN BranchDim b ON i.BranchKey = b.BranchKey 
-
 JOIN ProductDim p ON i.ProductKey = p.ProductKey 
-
 WHERE i.CurrentStock < i.RestockThreshold 
-
 ORDER BY b.BranchKey, i.CurrentStock ASC; 
 
- 
-
 9. Description: Calculates the average order value by dividing the total revenue by the count of distinct source order IDs. It joins the FactSales table with the BranchDim table to group and displays the results by specific branch location. This query evaluates the average transaction size at different branches. 
-
 SELECT 
-
     f.BranchKey, 
-
     b.City, 
-
     SUM(f.Revenue) / COUNT(DISTINCT f.SourceOrderID) AS AvgOrderValue 
-
 FROM FactSales f 
-
 JOIN BranchDim b ON f.BranchKey = b.BranchKey 
-
 GROUP BY f.BranchKey, b.City; 
