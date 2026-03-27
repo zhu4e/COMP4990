@@ -40,9 +40,12 @@ if ($res) while ($row = $res->fetch_array()) $dw_tables[] = $row[0];
 
 <div class="page database-page">
     <div class="topbar">
-        <h1>Admin Data Warehouse View</h1>
-        <div>
-            <a class="btn secondary" href="admin_index.php">Back</a>
+        <div class="topbar-left">
+            <h1>Admin Data Warehouse View</h1>
+            <p class="muted">Full data warehouse browsing access.</p>
+        </div>
+        <div class="topbar-right">
+            <a class="btn secondary" href="admin_dashboard.php">Back to Dashboard</a>
             <a class="btn" href="logout.php">Logout</a>
         </div>
     </div>
